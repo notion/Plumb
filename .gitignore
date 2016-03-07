@@ -36,7 +36,10 @@ proguard/
 captures/
 
 # Intellij
+.idea
 *.iml
-
-### Android Patch ###
+*.ipr
+*.iws
+classes
+gen-external-apklibs### Android Patch ###
 gen-external-apklibs
