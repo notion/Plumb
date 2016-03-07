@@ -1,1 +1,1 @@
-include ':plumb-example', ':core'
+include ':plumb-example', ':core', ':compiler'
