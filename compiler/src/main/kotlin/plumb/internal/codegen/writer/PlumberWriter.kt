@@ -13,7 +13,7 @@ object PlumberWriter {
 	val PKG_NAME = "plumb"
 	val CLASS_SUFFIX = "_Plumber"
 
-	fun write(filer: Filer, plumbed: TypeElement, plumbedTo: TypeMirror) {
+	fun write(filer: Filer, plumbed: TypeElement, plumbedTo: TypeElement) {
 		val plumberMapImpl = TypeSpec.classBuilder(className(plumbed))
 				.addModifiers(Modifier.PUBLIC)
 				.addSuperinterface(interfaceDeclaration(plumbed, plumbedTo))
@@ -27,14 +27,14 @@ object PlumberWriter {
 
 	private fun className(plumbedElement: Element) = plumbedElement.simpleName.toString() + CLASS_SUFFIX
 
-	private fun interfaceDeclaration(plumbed: TypeElement, plumbedTo: TypeMirror): ParameterizedTypeName {
+	private fun interfaceDeclaration(plumbed: TypeElement, plumbedTo: TypeElement): ParameterizedTypeName {
 		val plumberClzName = ClassName.get(Plumber::class.java)
 		val plumbedClzName = ClassName.get(plumbed)
 		val plumbedToClzName = ClassName.get(plumbedTo)
 		return ParameterizedTypeName.get(plumberClzName, plumbedClzName, plumbedToClzName)
 	}
 
-	private fun plumbMethod(plumbed: TypeElement, plumbedTo: TypeMirror): MethodSpec {
+	private fun plumbMethod(plumbed: TypeElement, plumbedTo: TypeElement): MethodSpec {
 		val plumbedParam = ParameterSpec.builder(ClassName.get(plumbed), "plumbed").build()
 		val plumbedToParam = ParameterSpec.builder(ClassName.get(plumbedTo), "plumbedTo").build()
 

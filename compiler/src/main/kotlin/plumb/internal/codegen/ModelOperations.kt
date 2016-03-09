@@ -9,22 +9,28 @@ import javax.lang.model.element.TypeElement
 
 class ModelOperations(val model: Model, private val filer: Filer) {
 
-	val populatePlumbedMap = { elements: Set<Element> ->
+	fun populatePlumbedMap(elements: Set<Element>) {
 		elements.forEach { element ->
-			val plumbed = element.getAnnotation(Plumbed::class.java)
-			model.plumbedMap.put(element as TypeElement, plumbed.getValue())
+			if (element is TypeElement) {
+				val plumbed = element.getAnnotation(Plumbed::class.java)
+				val value = plumbed.getValue()
+				element.enclosedElements.first { it.asType() == value }
+					.let {
+						model.plumbedMap.put(element, it as TypeElement)
+					}
+			}
+
 		}
 		model
 	}
 
-	val createPlumberMapImpl = {
+	fun generatePlumberMapImpl() {
 		if (model.plumbedMap.size > 0) {
 			PlumberMapImplWriter.write(filer, model)
 		}
-		model
 	}
 
-	val createPlumbers = {
+	fun generatePlumbers() {
 		model.plumbedMap.forEach {
 			PlumberWriter.write(filer, it.key, it.value)
 		}

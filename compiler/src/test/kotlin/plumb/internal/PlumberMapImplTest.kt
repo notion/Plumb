@@ -13,14 +13,21 @@ open class PlumberMapImplTest {
 	private val singleClassSource = JavaFileObjects.forSourceLines("plumb.example.PlumbedClassA",
 			"package plumb.example;",
 
-			"import plumb.annotation.Plumbed;",
+			"import plumb.annotation.*;",
+			"import rx.Observable;",
+			"import rx.subjects.BehaviorSubject;",
 
 			"@Plumbed(PlumbedClassA.PlumbedViewModelA.class)",
 			"public class PlumbedClassA {",
 
 			"   PlumbedViewModelA viewModel = new PlumbedViewModelA();",
 
+			"	@Out(\"integer\")",
+			"	public Observable<Integer> producer;",
+
 			"   public class PlumbedViewModelA {",
+			"		@In(\"integer\")",
+			"		public BehaviorSubject<Integer> integer = BehaviorSubject.create();",
 			"   }",
 			"}")
 

@@ -42,11 +42,22 @@ class PlumbProcessor : AbstractProcessor() {
 			roundEnv: RoundEnvironment): Boolean {
 		val modelOperations = ModelOperations(Model(), filer)
 
+		/*
+			TODO -- Encapsulate everything in ModelOperations,
+			Such that all we have to do is say modelOperations.process(), and we're off to the races.
+			Or consider something else.
+		 */
+
 		val plumbed = roundEnv.getElementsAnnotatedWith(Plumbed::class.java)
 		modelOperations.populatePlumbedMap(plumbed)
 
-		modelOperations.createPlumbers()
-		modelOperations.createPlumberMapImpl()
+		val out = roundEnv.getElementsAnnotatedWith(Out::class.java)
+		out.forEach {
+			System.out.println("SWAG ${it.kind} ${it.enclosingElement}")
+		}
+
+		modelOperations.generatePlumbers()
+		modelOperations.generatePlumberMapImpl()
 		return false
 	}
 
