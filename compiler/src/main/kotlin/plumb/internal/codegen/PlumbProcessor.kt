@@ -18,9 +18,6 @@ class PlumbProcessor : AbstractProcessor() {
 	private lateinit var filer: Filer
 	private lateinit var messager: Messager
 
-	private lateinit var typeUtils: Types
-	private lateinit var elementUtils: Elements
-
 	override fun getSupportedSourceVersion(): SourceVersion {
 		return SourceVersion.latestSupported();
 	}
@@ -38,24 +35,10 @@ class PlumbProcessor : AbstractProcessor() {
 		filer = processingEnv.filer
 	}
 
-	override fun process(annotations: MutableSet<out TypeElement>,
-			roundEnv: RoundEnvironment): Boolean {
-		val modelOperations = ModelOperations(Model(), filer)
-
-		/*
-			TODO -- Encapsulate everything in ModelOperations,
-			Such that all we have to do is say modelOperations.process(), and we're off to the races.
-			Or consider something else.
-		 */
-
-		val plumbed = roundEnv.getElementsAnnotatedWith(Plumbed::class.java)
-		modelOperations.populatePlumbedMap(plumbed)
-
-		val out = roundEnv.getElementsAnnotatedWith(Out::class.java)
-		out.forEach {
-			System.out.println("SWAG ${it.kind} ${it.enclosingElement}")
-		}
-
+	override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
+		val modelOperations = ModelOperations(Model(), roundEnv, filer)
+		modelOperations.populatePlumbedMap()
+		modelOperations.populateOutsAndIns()
 		modelOperations.generatePlumbers()
 		modelOperations.generatePlumberMapImpl()
 		return false

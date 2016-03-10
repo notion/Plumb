@@ -23,9 +23,15 @@ class PlumberWriterTest {
 			"	@Out(\"integer\")",
 			"	public Observable<Integer> producer;",
 
+			"	@In(\"string\")",
+			"	public BehaviorSubject<String> stringSubject = BehaviorSubject.create();",
+
 			"   public class PlumbedViewModelA {",
 			"		@In(\"integer\")",
 			"		public BehaviorSubject<Integer> integer = BehaviorSubject.create();",
+
+			"		@Out(\"string\")",
+			"		public Observable<String> stringObservable;",
 			"   }",
 			"}")
 
@@ -42,6 +48,7 @@ class PlumberWriterTest {
 			"	@Override",
 			"	public void plumb(PlumbedClassA plumbed, PlumbedClassA.PlumbedViewModelA plumbedTo) {",
 			"		subscriptions.add(Utils.replicate(plumbed.producer, plumbedTo.integer));",
+			"		subscriptions.add(Utils.replicate(plumbedTo.stringObservable, plumbed.stringSubject));",
 			"	}",
 			"",
 			"	@Override",
