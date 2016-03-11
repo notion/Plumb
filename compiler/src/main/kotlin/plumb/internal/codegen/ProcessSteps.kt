@@ -50,7 +50,7 @@ object ProcessSteps {
                                 if (annotation != null) {
                                     val id = annotation.value
                                     // TODO validate OUT uniqueness
-                                    plumber.registry.add(
+                                    plumber.add(
                                             InOutRegistry(id, Entry(encapsulatingClass, field)))
                                 }
                             }
@@ -68,7 +68,7 @@ object ProcessSteps {
                                 val annotation = field.getAnnotation(In::class.java)
                                 if (annotation != null) {
                                     val id = annotation.value
-                                    val registry = plumber.registry.firstOrNull { it.id == id }
+                                    val registry = plumber.firstOrNull { it.id == id }
                                     if (registry == null) {
                                         // TODO error condition
                                     }
