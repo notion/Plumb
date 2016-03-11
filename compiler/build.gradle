@@ -1,29 +1,17 @@
-apply plugin: 'java'
-apply plugin: 'kotlin'
-
-targetCompatibility = JavaVersion.VERSION_1_7
-sourceCompatibility = JavaVersion.VERSION_1_7
-
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(path: ':core')
-    compile 'com.google.auto.service:auto-service:1.0-rc2'
-    compile 'com.squareup:javapoet:1.5.1'
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.0'
-
-    testCompile 'com.google.testing.compile:compile-testing:0.8'
-    testCompile 'com.google.truth:truth:0.28'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.assertj:assertj-core:2.3.0'
-}
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.0"
     }
 }
+
+apply plugin: 'kotlin'
+
+targetCompatibility = JavaVersion.VERSION_1_6
+sourceCompatibility = JavaVersion.VERSION_1_6
+
 repositories {
     mavenCentral()
 }
@@ -35,4 +23,16 @@ sourceSets {
     test {
         java.srcDirs += 'src/test/kotlin'
     }
+}
+
+dependencies {
+    compile project(path: ':core')
+
+    compile 'com.squareup:javapoet:1.5.1'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.0'
+
+    testCompile 'com.google.testing.compile:compile-testing:0.8'
+    testCompile 'com.google.truth:truth:0.28'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:2.3.0'
 }
