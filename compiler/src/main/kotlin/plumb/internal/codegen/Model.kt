@@ -15,7 +15,7 @@ class Model(val roundEnv: RoundEnvironment, val filer: Filer) {
             private val registry: MutableList<InOutRegistry> = mutableListOf()) : MutableList<InOutRegistry> by registry {
 
         fun getAllElements(): List<TypeElement> {
-            return mutableListOf(enclosed, enclosing)
+            return listOf(enclosed, enclosing)
         }
 
         class Entry(val enclosingElement: TypeElement, val element: Element)
