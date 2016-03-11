@@ -40,12 +40,3 @@ class PlumbProcessor : AbstractProcessor() {
 	}
 
 }
-
-fun Plumbed.getValue(): TypeMirror {
-	try {
-		return value as TypeMirror
-	}
-	catch (e: MirroredTypeException) {
-		return e.typeMirror
-	}
-}
