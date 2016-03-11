@@ -39,7 +39,7 @@ class PlumbProcessor : AbstractProcessor() {
 
     override fun process(annotations: MutableSet<out TypeElement>,
             roundEnv: RoundEnvironment): Boolean {
-        ProcessSteps.execute(roundEnv)
+        ProcessSteps.execute(roundEnv, filer)
         return false
     }
 

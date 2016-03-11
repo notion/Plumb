@@ -9,6 +9,8 @@ import plumb.internal.codegen.Model.PlumberModel.Entry
 import plumb.internal.codegen.Model.PlumberModel.InOutRegistry
 import plumb.internal.codegen.getValue
 import plumb.internal.codegen.step.ProcessStep
+import plumb.internal.codegen.writer.PlumberWriter
+import javax.annotation.processing.Filer
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 
@@ -17,10 +19,11 @@ object ProcessSteps {
     private val steps = listOf(
             ReadPlumbedClasses,
             ReadOutFields,
-            ReadInFields)
+            ReadInFields,
+            WritePlumbers)
 
-    fun execute(roundEnv: RoundEnvironment) {
-        val model = Model(roundEnv)
+    fun execute(roundEnv: RoundEnvironment, filer: Filer) {
+        val model = Model(roundEnv, filer)
         steps.forEach {
             it.process(model)
         }
@@ -81,6 +84,14 @@ object ProcessSteps {
                                 }
                             }
                 }
+            }
+        }
+    }
+
+    private object WritePlumbers : ProcessStep {
+        override fun process(model: Model) {
+            model.plumberEntries.forEach { plumberModel ->
+                PlumberWriter.write(plumberModel, model.filer)
             }
         }
     }
