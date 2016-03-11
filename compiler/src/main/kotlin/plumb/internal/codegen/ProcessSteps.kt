@@ -12,7 +12,7 @@ import javax.lang.model.element.TypeElement
 object ProcessSteps {
 
     private val steps = listOf(
-            ReadPlumbedClassesStep,
+            ReadPlumbedClasses,
             ReadOutFields,
             ReadInFields)
 
@@ -23,7 +23,7 @@ object ProcessSteps {
         }
     }
 
-    private object ReadPlumbedClassesStep : ProcessStep {
+    private object ReadPlumbedClasses : ProcessStep {
         override fun process(model: Model) {
             val elements = model.roundEnv.getElementsAnnotatedWith(Plumbed::class.java)
             elements.forEach { element ->
