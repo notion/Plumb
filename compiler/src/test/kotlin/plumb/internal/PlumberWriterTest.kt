@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertAbout
 import com.google.testing.compile.JavaFileObjects
 import com.google.testing.compile.JavaSourceSubjectFactory
 import org.junit.Test
+import plumb.internal.codegen.PlumbProcessor
 
 class PlumberWriterTest {
 
