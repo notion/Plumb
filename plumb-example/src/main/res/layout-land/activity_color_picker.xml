@@ -35,7 +35,7 @@
                 android:text="R: " />
 
             <SeekBar
-                android:id="@+id/red"
+                android:id="@+id/red_seek_bar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
@@ -57,7 +57,7 @@
                 android:text="G: " />
 
             <SeekBar
-                android:id="@+id/green"
+                android:id="@+id/green_seek_bar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
@@ -79,7 +79,7 @@
                 android:text="B: " />
 
             <SeekBar
-                android:id="@+id/blue"
+                android:id="@+id/blue_seek_bar"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
