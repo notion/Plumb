@@ -48,7 +48,6 @@ object PlumberWriter {
     private fun compositeSubscDeclaration(): FieldSpec {
         val type = CompositeSubscription::class.java
         return FieldSpec.builder(type, "subscriptions", Modifier.PRIVATE)
-                .initializer("new \$T()", type)
                 .build()
     }
 
@@ -63,6 +62,8 @@ object PlumberWriter {
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(plumbedParam)
                 .addParameter(plumbedToParam)
+
+        builder.addStatement("subscriptions = new \$T()", CompositeSubscription::class.java)
 
         plumberModel.sortedBy { it.id }.forEach {
             val outEntry = it.outEntry
