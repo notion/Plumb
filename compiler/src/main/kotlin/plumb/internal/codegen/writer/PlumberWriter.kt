@@ -64,7 +64,7 @@ object PlumberWriter : AbsWriter<PlumberModel>() {
         builder.addCode("" +
         "if (subscriptions != null && !subscriptions.isUnsubscribed()) {\n" +
         "   subscriptions.unsubscribe();\n" +
-        "}"
+        "}\n"
         )
 
         builder.addStatement("subscriptions = new \$T()", CompositeSubscription::class.java)
