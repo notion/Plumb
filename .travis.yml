@@ -1,2 +1,6 @@
-language: java
+language: android
+android:
+    components:
+        - build-tools-23.0.2
+        - android-23
 script: gradle check
