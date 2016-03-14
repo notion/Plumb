@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService
 import plumb.annotation.In
 import plumb.annotation.Out
 import plumb.annotation.Plumbed
+import plumb.internal.codegen.step.ProcessSteps
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Filer
 import javax.annotation.processing.Messager
@@ -38,7 +39,7 @@ class PlumbProcessor : AbstractProcessor() {
 
     override fun process(annotations: MutableSet<out TypeElement>,
             roundEnv: RoundEnvironment): Boolean {
-        ProcessSteps.execute(roundEnv)
+        ProcessSteps.execute(roundEnv, filer)
         return false
     }
 
