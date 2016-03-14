@@ -85,10 +85,10 @@ object PlumberWriter {
     }
 
     private fun getQualifiedNameForElement(entry: PlumberModel.Entry, model: PlumberModel): String {
-        val prefix = if (entry.enclosingElement == model.enclosing) {
+        val prefix = if (entry.enclosingElement.asType() == model.enclosing.asType()) {
             "plumbed"
         }
-        else if (entry.enclosingElement == model.enclosed) {
+        else if (entry.enclosingElement.asType() == model.enclosed.asType()) {
             "plumbedTo"
         }
         else {
