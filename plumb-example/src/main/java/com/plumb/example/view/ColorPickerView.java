@@ -1,17 +1,13 @@
 package com.plumb.example.view;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-
 import com.jakewharton.rxbinding.widget.RxSeekBar;
 import com.plumb.example.viewmodel.ColorPickerViewModel;
 import com.plumb.plumb.R;
-
 import plumb.Plumbing;
 import plumb.annotation.In;
 import plumb.annotation.Out;
@@ -28,15 +24,11 @@ public class ColorPickerView extends RelativeLayout {
 
     public ColorPickerViewModel viewModel = new ColorPickerViewModel();
 
-    @Out("red")
-    public Observable<Integer> red;
-    @Out("green")
-    public Observable<Integer> green;
-    @Out("blue")
-    public Observable<Integer> blue;
+    @Out("red") public Observable<Integer> red;
+    @Out("green") public Observable<Integer> green;
+    @Out("blue") public Observable<Integer> blue;
 
-    @In("color")
-    public BehaviorSubject<Integer> color = BehaviorSubject.create();
+    @In("color") public BehaviorSubject<Integer> color = BehaviorSubject.create();
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -48,8 +40,7 @@ public class ColorPickerView extends RelativeLayout {
         super(context, attrs);
     }
 
-    @Override
-    public void onAttachedToWindow() {
+    @Override public void onAttachedToWindow() {
         super.onAttachedToWindow();
         colorView = (ImageView) findViewById(R.id.target);
         SeekBar redSeekBar = (SeekBar) findViewById(R.id.red_seek_bar);
@@ -62,16 +53,14 @@ public class ColorPickerView extends RelativeLayout {
 
         //(color) -> { colorView.setBackgroundColor(color) }
         subscriptions.add(color.subscribe(new Action1<Integer>() {
-            @Override
-            public void call(Integer color) {
+            @Override public void call(Integer color) {
                 colorView.setBackgroundColor(color);
             }
         }));
         Plumbing.plumb(this, viewModel);
     }
 
-    @Override
-    public void onDetachedFromWindow() {
+    @Override public void onDetachedFromWindow() {
         subscriptions.unsubscribe();
         Plumbing.demolish(this);
         super.onDetachedFromWindow();
