@@ -11,6 +11,7 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    
     buildTypes {
         release {
             minifyEnabled false
@@ -20,10 +21,10 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.2.0'
-    compile 'io.reactivex:rxjava:1.1.0'
-    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
-    testCompile 'junit:junit:4.12'
     compile project(path: ':core')
+    compile 'com.android.support:appcompat-v7:23.2.0'
+    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+    compile 'io.reactivex:rxjava:1.1.0'
+
+    testCompile 'junit:junit:4.12'
 }
