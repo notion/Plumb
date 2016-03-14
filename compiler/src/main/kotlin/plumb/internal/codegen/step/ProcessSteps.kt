@@ -40,7 +40,7 @@ object ProcessSteps {
                     val value = plumbed.getValue()
                     element.enclosedElements.first { it.asType() == value }
                             .let {
-                                model.plumberEntries.add(PlumberModel(element, it as TypeElement))
+                                model.plumberEntries.add(PlumberModel(element, it))
                             }
                 }
             }

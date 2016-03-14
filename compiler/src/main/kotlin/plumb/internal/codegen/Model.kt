@@ -11,14 +11,14 @@ class Model(val roundEnv: RoundEnvironment, val filer: Filer) {
 
     class PlumberModel(
             val enclosing: TypeElement,
-            val enclosed: TypeElement,
+            val enclosed: Element,
             private val registry: MutableList<InOutRegistry> = mutableListOf()) : MutableList<InOutRegistry> by registry {
 
-        fun getAllElements(): List<TypeElement> {
+        fun getAllElements(): List<Element> {
             return listOf(enclosed, enclosing)
         }
 
-        class Entry(val enclosingElement: TypeElement, val element: Element)
+        class Entry(val enclosingElement: Element, val element: Element)
         class InOutRegistry(val id: String, val outEntry: Entry, val inEntries: MutableList<Entry> = mutableListOf())
     }
 }
