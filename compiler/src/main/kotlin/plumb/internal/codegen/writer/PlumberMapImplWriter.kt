@@ -16,12 +16,12 @@ import java.util.HashMap
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Modifier
 
-object PlumberMapImplWriter {
+object PlumberMapImplWriter : AbsWriter<Model>() {
 
     val PKG_NAME = "plumb"
     val CLASS_NAME = "PlumberMapImpl"
 
-    fun write(model: Model, filer: Filer) {
+    override fun _write(model: Model): JavaFile.Builder {
         val plumberMapImpl = TypeSpec.classBuilder(CLASS_NAME)
                 .addSuperinterface(PlumberMap::class.java)
                 .addModifiers(Modifier.PUBLIC)
@@ -30,8 +30,7 @@ object PlumberMapImplWriter {
                 .addMethod(plumberForMethod())
                 .build();
 
-        val javaFile = JavaFile.builder(PKG_NAME, plumberMapImpl).build()
-        javaFile.writeTo(filer)
+        return JavaFile.builder(PKG_NAME, plumberMapImpl)
     }
 
     private fun mapDeclaration(): FieldSpec {

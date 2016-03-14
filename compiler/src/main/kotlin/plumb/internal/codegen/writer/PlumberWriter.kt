@@ -10,28 +10,26 @@ import com.squareup.javapoet.TypeSpec
 import plumb.Plumber
 import plumb.internal.codegen.Model.PlumberModel
 import rx.subscriptions.CompositeSubscription
-import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
 
-object PlumberWriter {
+object PlumberWriter : AbsWriter<PlumberModel>() {
 
     val PKG_NAME = "plumb"
     val CLASS_SUFFIX = "_Plumber"
 
-    fun write(plumberModel: PlumberModel, filer: Filer) {
-        val plumberMapImpl = TypeSpec.classBuilder(className(plumberModel.enclosing))
+    override fun _write(model: PlumberModel): JavaFile.Builder {
+        val plumberMapImpl = TypeSpec.classBuilder(className(model.enclosing))
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(
-                        interfaceDeclaration(plumberModel.enclosing, plumberModel.enclosed))
+                        interfaceDeclaration(model.enclosing, model.enclosed))
                 .addField(compositeSubscDeclaration())
-                .addMethod(plumbMethod(plumberModel))
+                .addMethod(plumbMethod(model))
                 .addMethod(demolishMethod())
                 .build();
 
-        val javaFile = JavaFile.builder(PKG_NAME, plumberMapImpl).build()
-        javaFile.writeTo(filer)
+        return JavaFile.builder(PKG_NAME, plumberMapImpl)
     }
 
     private fun className(
