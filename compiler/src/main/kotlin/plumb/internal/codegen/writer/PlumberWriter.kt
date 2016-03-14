@@ -38,10 +38,10 @@ object PlumberWriter {
             plumbedElement: Element) = plumbedElement.simpleName.toString() + CLASS_SUFFIX
 
     private fun interfaceDeclaration(plumbed: TypeElement,
-            plumbedTo: TypeElement): ParameterizedTypeName {
+            plumbedTo: Element): ParameterizedTypeName {
         val plumberClzName = ClassName.get(Plumber::class.java)
         val plumbedClzName = ClassName.get(plumbed)
-        val plumbedToClzName = ClassName.get(plumbedTo)
+        val plumbedToClzName = ClassName.get(plumbedTo.asType())
         return ParameterizedTypeName.get(plumberClzName, plumbedClzName, plumbedToClzName)
     }
 
@@ -55,7 +55,7 @@ object PlumberWriter {
     private fun plumbMethod(plumberModel: PlumberModel): MethodSpec {
         val plumbedParam = ParameterSpec.builder(ClassName.get(plumberModel.enclosing),
                 "plumbed").build()
-        val plumbedToParam = ParameterSpec.builder(ClassName.get(plumberModel.enclosed),
+        val plumbedToParam = ParameterSpec.builder(ClassName.get(plumberModel.enclosed.asType()),
                 "plumbedTo").build()
 
         val builder = MethodSpec.methodBuilder("plumb")
@@ -85,10 +85,10 @@ object PlumberWriter {
     }
 
     private fun getQualifiedNameForElement(entry: PlumberModel.Entry, model: PlumberModel): String {
-        val prefix = if (entry.enclosingElement == model.enclosing) {
+        val prefix = if (entry.enclosingElement.asType() == model.enclosing.asType()) {
             "plumbed"
         }
-        else if (entry.enclosingElement == model.enclosed) {
+        else if (entry.enclosingElement.asType() == model.enclosed.asType()) {
             "plumbedTo"
         }
         else {

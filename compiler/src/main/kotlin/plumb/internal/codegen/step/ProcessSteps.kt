@@ -40,7 +40,7 @@ object ProcessSteps {
                     val value = plumbed.getValue()
                     element.enclosedElements.first { it.asType() == value }
                             .let {
-                                model.plumberEntries.add(PlumberModel(element, it as TypeElement))
+                                model.plumberEntries.add(PlumberModel(element, it))
                             }
                 }
             }
@@ -49,18 +49,14 @@ object ProcessSteps {
 
     private object ReadOutFields : ProcessStep {
         override fun process(model: Model) {
-            model.plumberEntries.forEach { plumber ->
-                plumber.getAllElements().forEach { encapsulatingClass ->
-                    encapsulatingClass.enclosedElements
-                            .forEach { field ->
-                                val annotation = field.getAnnotation(Out::class.java)
-                                if (annotation != null) {
-                                    val id = annotation.value
-                                    // TODO validate OUT uniqueness
-                                    plumber.add(
-                                            InOutRegistry(id, Entry(encapsulatingClass, field)))
-                                }
-                            }
+            val outElements = model.roundEnv.getElementsAnnotatedWith(Out::class.java)
+            outElements.forEach { out ->
+                val annotationValue = out.getAnnotation(Out::class.java)?.value
+                val enclosingElement = out.enclosingElement
+                if (annotationValue != null) {
+                    val entry = model.plumberEntries.firstOrNull { it.enclosing == enclosingElement || it.enclosed.asType() == enclosingElement.asType() }
+                    // TODO assert uniqueness of @Out id
+                    entry?.add(InOutRegistry(annotationValue, Entry(enclosingElement, out)))
                 }
             }
         }
@@ -68,22 +64,14 @@ object ProcessSteps {
 
     private object ReadInFields : ProcessStep {
         override fun process(model: Model) {
-            model.plumberEntries.forEach { plumber ->
-                plumber.getAllElements().forEach { encapsulatingClass ->
-                    encapsulatingClass.enclosedElements
-                            .forEach { field ->
-                                val annotation = field.getAnnotation(In::class.java)
-                                if (annotation != null) {
-                                    val id = annotation.value
-                                    val registry = plumber.firstOrNull { it.id == id }
-                                    if (registry == null) {
-                                        // TODO error condition
-                                    }
-                                    else {
-                                        registry.inEntries.add(Entry(encapsulatingClass, field))
-                                    }
-                                }
-                            }
+            val inElements = model.roundEnv.getElementsAnnotatedWith(In::class.java)
+            inElements.forEach { inElement ->
+                val annotationValue = inElement.getAnnotation(In::class.java)?.value
+                val enclosingElement = inElement.enclosingElement
+                if (annotationValue != null) {
+                    val plumber = model.plumberEntries.firstOrNull { it.enclosing == enclosingElement || it.enclosed.asType() == enclosingElement.asType() }
+                    val entry = plumber?.firstOrNull { it.id == annotationValue }
+                    entry?.inEntries?.add(Entry(enclosingElement, inElement))
                 }
             }
         }

@@ -1,6 +1,5 @@
 package plumb.internal.codegen
 
-import com.google.auto.service.AutoService
 import plumb.annotation.In
 import plumb.annotation.Out
 import plumb.annotation.Plumbed
@@ -9,12 +8,10 @@ import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Filer
 import javax.annotation.processing.Messager
 import javax.annotation.processing.ProcessingEnvironment
-import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.TypeElement
 
-@AutoService(Processor::class)
 class PlumbProcessor : AbstractProcessor() {
 
     private lateinit var filer: Filer
