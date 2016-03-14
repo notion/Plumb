@@ -63,6 +63,12 @@ object PlumberWriter {
                 .addParameter(plumbedParam)
                 .addParameter(plumbedToParam)
 
+        builder.addCode("" +
+        "if (subscriptions != null && !subscriptions.isUnsubscribed()) {\n" +
+        "   subscriptions.unsubscribe();\n" +
+        "}"
+        )
+
         builder.addStatement("subscriptions = new \$T()", CompositeSubscription::class.java)
 
         plumberModel.sortedBy { it.id }.forEach {
