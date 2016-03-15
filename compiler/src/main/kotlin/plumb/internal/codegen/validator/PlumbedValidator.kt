@@ -9,17 +9,21 @@ import javax.tools.Diagnostic.Kind
 object PlumbedValidator : Validator {
     override fun validate(element: Element, messager: Messager): Boolean {
         return if (element.kind != ElementKind.CLASS) {
-            messager.printMessage(Kind.ERROR,
-                    "Element ${element.simpleName} annotated with @Plumbed – must be a class.")
+            messager.printMessage(Kind.ERROR, classErrorMessage(element))
             false
         }
         else if (!element.modifiers.contains(Modifier.PUBLIC)) {
-            messager.printMessage(Kind.ERROR,
-                    "Element ${element.simpleName} annotated with @Plumbed – must be public.")
+            messager.printMessage(Kind.ERROR, publicErrorMessage(element))
             false
         }
         else {
             true
         }
     }
+
+    fun classErrorMessage(element: Element)
+            = "Element ${element.simpleName} annotated with @Plumbed – must be a class."
+
+    fun publicErrorMessage(element: Element)
+            = "Element ${element.simpleName} annotated with @Plumbed – must be public."
 }
