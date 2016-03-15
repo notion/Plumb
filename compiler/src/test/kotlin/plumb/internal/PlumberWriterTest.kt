@@ -18,7 +18,7 @@ class PlumberWriterTest {
             "@Plumbed(PlumbedClassA.PlumbedViewModelA.class)",
             "public class PlumbedClassA {",
 
-            "   PlumbedViewModelA viewModel = new PlumbedViewModelA();",
+            "	PlumbedViewModelA viewModel = new PlumbedViewModelA();",
 
             "	@Out(\"integer\")",
             "	public Observable<Integer> integerObservable;",
@@ -26,7 +26,7 @@ class PlumberWriterTest {
             "	@In(\"string\")",
             "	public BehaviorSubject<String> stringSubject = BehaviorSubject.create();",
 
-            "   public class PlumbedViewModelA {",
+            "	public class PlumbedViewModelA {",
             "		@In(\"integer\")",
             "		public BehaviorSubject<Integer> integerSubject = BehaviorSubject.create();",
 
@@ -46,10 +46,14 @@ class PlumberWriterTest {
             "import rx.subscriptions.CompositeSubscription;",
             "",
             "public class PlumbedClassA_Plumber implements Plumber<PlumbedClassA, PlumbedClassA.PlumbedViewModelA> {",
-            "	private CompositeSubscription subscriptions = new CompositeSubscription();",
+            "	private CompositeSubscription subscriptions;",
             "",
             "	@Override",
             "	public void plumb(PlumbedClassA plumbed, PlumbedClassA.PlumbedViewModelA plumbedTo) {",
+            "		if (subscriptions != null && !subscriptions.isUnsubscribed()) {",
+            "			subscriptions.unsubscribe()",
+            "		}",
+            "		subscriptions = new CompositeSubscription();",
             "		subscriptions.add(Utils.replicate(plumbed.integerObservable, plumbedTo.integerSubject));",
             "		subscriptions.add(Utils.replicate(plumbedTo.stringObservable, plumbedTo.stringSubject));",
             "		subscriptions.add(Utils.replicate(plumbedTo.stringObservable, plumbed.stringSubject));",
