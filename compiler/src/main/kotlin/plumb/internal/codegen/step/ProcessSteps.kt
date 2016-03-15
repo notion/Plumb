@@ -51,14 +51,12 @@ object ProcessSteps {
     private object ReadOutFields : ProcessStep {
         override fun process(model: Model) {
             val outElements = model.roundEnv.getElementsAnnotatedWith(Out::class.java)
-            outElements.forEach { out ->
-                val annotationValue = out.getAnnotation(Out::class.java)?.value
-                val enclosingElement = out.enclosingElement
-                if (annotationValue != null) {
-                    val entry = model.plumberEntries.firstOrNull { it.enclosing == enclosingElement || it.enclosed.asType() == enclosingElement.asType() }
-                    // TODO assert uniqueness of @Out id
-                    entry?.add(InOutRegistry(annotationValue, Entry(enclosingElement, out)))
-                }
+            outElements.forEach { outElement ->
+                val annotationValue = outElement.getAnnotation(Out::class.java).value
+                val enclosingElement = outElement.enclosingElement
+                val entry = model.plumberEntries.firstOrNull { it.enclosing == enclosingElement || it.enclosed.asType() == enclosingElement.asType() }
+                // TODO assert uniqueness of @Out id
+                entry?.add(InOutRegistry(annotationValue, Entry(enclosingElement, outElement)))
             }
         }
     }
@@ -67,13 +65,11 @@ object ProcessSteps {
         override fun process(model: Model) {
             val inElements = model.roundEnv.getElementsAnnotatedWith(In::class.java)
             inElements.forEach { inElement ->
-                val annotationValue = inElement.getAnnotation(In::class.java)?.value
+                val annotationValue = inElement.getAnnotation(In::class.java).value
                 val enclosingElement = inElement.enclosingElement
-                if (annotationValue != null) {
-                    val plumber = model.plumberEntries.firstOrNull { it.enclosing == enclosingElement || it.enclosed.asType() == enclosingElement.asType() }
-                    val entry = plumber?.firstOrNull { it.id == annotationValue }
-                    entry?.inEntries?.add(Entry(enclosingElement, inElement))
-                }
+                val plumber = model.plumberEntries.firstOrNull { it.enclosing == enclosingElement || it.enclosed.asType() == enclosingElement.asType() }
+                val entry = plumber?.firstOrNull { it.id == annotationValue }
+                entry?.inEntries?.add(Entry(enclosingElement, inElement))
             }
         }
     }
