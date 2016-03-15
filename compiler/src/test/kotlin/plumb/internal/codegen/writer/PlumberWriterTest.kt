@@ -1,4 +1,4 @@
-package plumb.internal
+package plumb.internal.codegen.writer
 
 import com.google.common.truth.Truth.assertAbout
 import com.google.testing.compile.JavaFileObjects
