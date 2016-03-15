@@ -8,6 +8,7 @@ import plumb.internal.codegen.Model.PlumberModel
 import plumb.internal.codegen.Model.PlumberModel.Entry
 import plumb.internal.codegen.Model.PlumberModel.InOutRegistry
 import plumb.internal.codegen.getValue
+import plumb.internal.codegen.validator.OutValidator
 import plumb.internal.codegen.validator.PlumbedValidator
 import plumb.internal.codegen.writer.PlumberMapImplWriter
 import plumb.internal.codegen.writer.PlumberWriter
@@ -15,6 +16,8 @@ import javax.annotation.processing.Filer
 import javax.annotation.processing.Messager
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
+import javax.lang.model.util.Elements
+import javax.lang.model.util.Types
 
 object ProcessSteps {
 
@@ -25,8 +28,9 @@ object ProcessSteps {
             WritePlumbers,
             WritePlumberMapImpls)
 
-    fun execute(roundEnv: RoundEnvironment, filer: Filer, messager: Messager) {
-        val model = Model(roundEnv, filer, messager)
+    fun execute(roundEnv: RoundEnvironment, filer: Filer, messager: Messager, types: Types,
+            elements: Elements) {
+        val model = Model(roundEnv, filer, messager, types, elements)
         steps.forEach {
             it.process(model)
         }
@@ -35,13 +39,13 @@ object ProcessSteps {
     private object ReadPlumbedClasses : ProcessStep {
         override fun process(model: Model) {
             val elements = model.roundEnv.getElementsAnnotatedWith(Plumbed::class.java)
-            elements.forEach { element ->
-                if (PlumbedValidator.validate(element, model.messager)) {
-                    val plumbed = element.getAnnotation(Plumbed::class.java)
+            elements.forEach { plumbedElement ->
+                if (PlumbedValidator.validate(plumbedElement, model)) {
+                    val plumbed = plumbedElement.getAnnotation(Plumbed::class.java)
                     val value = plumbed.getValue()
-                    element.enclosedElements.first { it.asType() == value }
+                    plumbedElement.enclosedElements.first { it.asType() == value }
                             .let {
-                                model.plumberEntries.add(PlumberModel(element as TypeElement, it))
+                                model.plumberEntries.add(PlumberModel(plumbedElement as TypeElement, it))
                             }
                 }
             }
@@ -52,11 +56,12 @@ object ProcessSteps {
         override fun process(model: Model) {
             val outElements = model.roundEnv.getElementsAnnotatedWith(Out::class.java)
             outElements.forEach { outElement ->
-                val annotationValue = outElement.getAnnotation(Out::class.java).value
-                val enclosingElement = outElement.enclosingElement
-                val entry = model.plumberEntries.firstOrNull { it.enclosing == enclosingElement || it.enclosed.asType() == enclosingElement.asType() }
-                // TODO assert uniqueness of @Out id
-                entry?.add(InOutRegistry(annotationValue, Entry(enclosingElement, outElement)))
+                if (OutValidator.validate(outElement, model)) {
+                    val annotationValue = outElement.getAnnotation(Out::class.java).value
+                    val enclosingElement = outElement.enclosingElement
+                    val entry = model.plumberEntries.first { it.enclosing == enclosingElement || it.enclosed.asType() == enclosingElement.asType() }
+                    entry.add(InOutRegistry(annotationValue, Entry(enclosingElement, outElement)))
+                }
             }
         }
     }
