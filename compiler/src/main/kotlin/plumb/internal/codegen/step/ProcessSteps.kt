@@ -8,9 +8,11 @@ import plumb.internal.codegen.Model.PlumberModel
 import plumb.internal.codegen.Model.PlumberModel.Entry
 import plumb.internal.codegen.Model.PlumberModel.InOutRegistry
 import plumb.internal.codegen.getValue
+import plumb.internal.codegen.validator.PlumbedValidator
 import plumb.internal.codegen.writer.PlumberMapImplWriter
 import plumb.internal.codegen.writer.PlumberWriter
 import javax.annotation.processing.Filer
+import javax.annotation.processing.Messager
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.TypeElement
 
@@ -23,8 +25,8 @@ object ProcessSteps {
             WritePlumbers,
             WritePlumberMapImpls)
 
-    fun execute(roundEnv: RoundEnvironment, filer: Filer) {
-        val model = Model(roundEnv, filer)
+    fun execute(roundEnv: RoundEnvironment, filer: Filer, messager: Messager) {
+        val model = Model(roundEnv, filer, messager)
         steps.forEach {
             it.process(model)
         }
@@ -34,13 +36,12 @@ object ProcessSteps {
         override fun process(model: Model) {
             val elements = model.roundEnv.getElementsAnnotatedWith(Plumbed::class.java)
             elements.forEach { element ->
-                //TODO assert Plumbed item is a Type
-                if (element is TypeElement) {
+                if (PlumbedValidator.validate(element, model.messager)) {
                     val plumbed = element.getAnnotation(Plumbed::class.java)
                     val value = plumbed.getValue()
                     element.enclosedElements.first { it.asType() == value }
                             .let {
-                                model.plumberEntries.add(PlumberModel(element, it))
+                                model.plumberEntries.add(PlumberModel(element as TypeElement, it))
                             }
                 }
             }

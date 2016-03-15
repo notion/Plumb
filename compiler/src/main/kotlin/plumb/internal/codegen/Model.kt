@@ -2,11 +2,12 @@ package plumb.internal.codegen
 
 import plumb.internal.codegen.Model.PlumberModel.InOutRegistry
 import javax.annotation.processing.Filer
+import javax.annotation.processing.Messager
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 
-class Model(val roundEnv: RoundEnvironment, val filer: Filer) {
+class Model(val roundEnv: RoundEnvironment, val filer: Filer, val messager: Messager) {
     val plumberEntries = mutableListOf<PlumberModel>()
 
     class PlumberModel(
