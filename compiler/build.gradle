@@ -38,3 +38,5 @@ dependencies {
     testCompile 'org.assertj:assertj-core:2.3.0'
     testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 }
+
+apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
