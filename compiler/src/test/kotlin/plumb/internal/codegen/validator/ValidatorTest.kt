@@ -5,6 +5,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.anyString
 import org.mockito.Mockito.eq
 import org.mockito.Mockito.mock
+import plumb.annotation.In
 import plumb.annotation.Out
 import plumb.internal.codegen.Model
 import plumb.internal.codegen.Model.PlumberModel
@@ -49,7 +50,6 @@ abstract class ValidatorTest {
         return list
     }
 
-    protected fun getMockedOutAnnotation() = mock(Out::class.java)
 
     protected fun getPlumberModelWithEntryIds(
             vararg entryIds: Array<String>): MutableList<PlumberModel> {
@@ -74,26 +74,44 @@ abstract class ValidatorTest {
                 plumberEntries)
     }
 
-    protected fun makeMockedElement(kind: ElementKind, type: TypeMirror,
-            outAnnotationValue: String): Element {
-        val field = Mockito.mock(Element::class.java)
-        mockWhen(field.kind).thenReturn(kind)
-        mockWhen(field.asType()).thenReturn(type)
-        mockElementAnnotationValue(field, outAnnotationValue)
-        mockWhen(field.enclosingElement).thenReturn(mock(Element::class.java))
-        return field
-    }
-
     protected fun getMockExecutableTypeWithReturnType(type: TypeMirror): ExecutableType {
         val executableType = mock(ExecutableType::class.java)
         mockWhen(executableType.returnType).thenReturn(type)
         return executableType
     }
 
-    protected fun mockElementAnnotationValue(element: Element, annotationValue: String) {
-        val annotation = getMockedOutAnnotation()
-        mockWhen(annotation.value).thenReturn(annotationValue)
-        mockWhen(element.getAnnotation(Out::class.java)).thenReturn(annotation)
+    private fun makeMockedElement(kind: ElementKind, type: TypeMirror): Element {
+        val field = Mockito.mock(Element::class.java)
+        mockWhen(field.kind).thenReturn(kind)
+        mockWhen(field.asType()).thenReturn(type)
+        mockWhen(field.enclosingElement).thenReturn(mock(Element::class.java))
+        return field
+    }
+
+    protected fun makeMockedOutElement(kind: ElementKind, type: TypeMirror,
+            outAnnotationValue: String): Element {
+        val field = makeMockedElement(kind, type)
+        mockOutAnnotationValue(field, outAnnotationValue)
+        return field
+    }
+
+    protected fun makeMockedInElement(kind: ElementKind, type: TypeMirror,
+            inAnnotationValue: String): Element {
+        val field = makeMockedElement(kind, type)
+        mockInAnnotationValue(field, inAnnotationValue)
+        return field
+    }
+
+    protected fun mockOutAnnotationValue(element: Element, annotationValue: String) {
+        val outAnnotation = mock(Out::class.java)
+        mockWhen(outAnnotation.value).thenReturn(annotationValue)
+        mockWhen(element.getAnnotation(Out::class.java)).thenReturn(outAnnotation)
+    }
+
+    protected fun mockInAnnotationValue(element: Element, annotationValue: String) {
+        val inAnnotation = mock(In::class.java)
+        mockWhen(inAnnotation.value).thenReturn(annotationValue)
+        mockWhen(element.getAnnotation(In::class.java)).thenReturn(inAnnotation)
     }
 
 }

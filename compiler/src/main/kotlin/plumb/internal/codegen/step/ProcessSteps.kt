@@ -8,6 +8,7 @@ import plumb.internal.codegen.Model.PlumberModel
 import plumb.internal.codegen.Model.PlumberModel.Entry
 import plumb.internal.codegen.Model.PlumberModel.InOutRegistry
 import plumb.internal.codegen.getValue
+import plumb.internal.codegen.validator.InValidator
 import plumb.internal.codegen.validator.OutValidator
 import plumb.internal.codegen.validator.PlumbedValidator
 import plumb.internal.codegen.writer.PlumberMapImplWriter
@@ -45,7 +46,8 @@ object ProcessSteps {
                     val value = plumbed.getValue()
                     plumbedElement.enclosedElements.first { it.asType() == value }
                             .let {
-                                model.plumberEntries.add(PlumberModel(plumbedElement as TypeElement, it))
+                                model.plumberEntries.add(
+                                        PlumberModel(plumbedElement as TypeElement, it))
                             }
                 }
             }
@@ -70,11 +72,13 @@ object ProcessSteps {
         override fun process(model: Model) {
             val inElements = model.roundEnv.getElementsAnnotatedWith(In::class.java)
             inElements.forEach { inElement ->
-                val annotationValue = inElement.getAnnotation(In::class.java).value
-                val enclosingElement = inElement.enclosingElement
-                val plumber = model.plumberEntries.firstOrNull { it.enclosing == enclosingElement || it.enclosed.asType() == enclosingElement.asType() }
-                val entry = plumber?.firstOrNull { it.id == annotationValue }
-                entry?.inEntries?.add(Entry(enclosingElement, inElement))
+                if (InValidator.validate(inElement, model)) {
+                    val annotationValue = inElement.getAnnotation(In::class.java).value
+                    val enclosingElement = inElement.enclosingElement
+                    val plumber = model.plumberEntries.first { it.enclosing == enclosingElement || it.enclosed.asType() == enclosingElement.asType() }
+                    val entry = plumber.first { it.id == annotationValue }
+                    entry.inEntries.add(Entry(enclosingElement, inElement))
+                }
             }
         }
     }
