@@ -18,4 +18,13 @@ public class ColorPickerViewModel {
                     return (0xFF << 24) | (r << 16) | (g << 8) | b;
                 }
             });
+
+    private static ColorPickerViewModel instance = new ColorPickerViewModel();
+
+    public static ColorPickerViewModel getInstance() {
+        return instance;
+    }
+
+    private ColorPickerViewModel() {
+    }
 }

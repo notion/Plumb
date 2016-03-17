@@ -21,7 +21,7 @@ import rxjoin.example.viewmodel.ColorPickerViewModel;
 
     public ImageView colorView;
 
-    public ColorPickerViewModel viewModel = new ColorPickerViewModel();
+    public ColorPickerViewModel viewModel = ColorPickerViewModel.getInstance();
 
     @Out("red") public Observable<Integer> red;
     @Out("green") public Observable<Integer> green;
