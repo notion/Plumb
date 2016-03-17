@@ -46,9 +46,9 @@ import rxjoin.example.viewmodel.ColorPickerViewModel;
         SeekBar greenSeekBar = (SeekBar) findViewById(R.id.green_seek_bar);
         SeekBar blueSeekBar = (SeekBar) findViewById(R.id.blue_seek_bar);
 
-        red = RxSeekBar.changes(redSeekBar);
-        green = RxSeekBar.changes(greenSeekBar);
-        blue = RxSeekBar.changes(blueSeekBar);
+        red = RxSeekBar.changes(redSeekBar).skip(1);
+        green = RxSeekBar.changes(greenSeekBar).skip(1);
+        blue = RxSeekBar.changes(blueSeekBar).skip(1);
 
         //(color) -> { colorView.setBackgroundColor(color) }
         subscriptions.add(color.subscribe(new Action1<Integer>() {

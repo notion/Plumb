@@ -8,9 +8,9 @@ import rxjoin.annotation.Out;
 
 public class ColorPickerViewModel {
 
-    @In("red") public BehaviorSubject<Integer> red = BehaviorSubject.create();
-    @In("green") public BehaviorSubject<Integer> green = BehaviorSubject.create();
-    @In("blue") public BehaviorSubject<Integer> blue = BehaviorSubject.create();
+    @In("red") public BehaviorSubject<Integer> red = BehaviorSubject.create(20);
+    @In("green") public BehaviorSubject<Integer> green = BehaviorSubject.create(0);
+    @In("blue") public BehaviorSubject<Integer> blue = BehaviorSubject.create(0);
 
     @Out("color") public Observable<Integer> color = Observable.combineLatest(red, green, blue,
             new Func3<Integer, Integer, Integer, Integer>() {
