@@ -1,85 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rxjoin.example.view.ColorPickerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        >
 
     <ImageView
-        android:id="@+id/target"
-        android:layout_width="match_parent"
-        android:layout_height="240dp"
-        tools:src="#FFFF00" />
+            android:id="@+id/target"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            tools:src="#FFFF00"
+            />
 
     <LinearLayout
-        android:id="@+id/red_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/target"
-        android:layout_marginTop="32dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+            android:id="@+id/red_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/target"
+            android:layout_marginTop="32dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            >
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="R: " />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="R: "
+                />
 
         <SeekBar
-            android:id="@+id/red_seek_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:max="255" />
+                android:id="@+id/red_seek_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:max="255"
+                />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/green_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/red_container"
-        android:layout_marginTop="32dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+            android:id="@+id/green_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/red_container"
+            android:layout_marginTop="32dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            >
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="G: " />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="G: "
+                />
 
         <SeekBar
-            android:id="@+id/green_seek_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:max="255" />
+                android:id="@+id/green_seek_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:max="255"
+                />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/blue_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/green_container"
-        android:layout_marginTop="32dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+            android:id="@+id/blue_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/green_container"
+            android:layout_marginTop="32dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            >
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="B: " />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="B: "
+                />
 
         <SeekBar
-            android:id="@+id/blue_seek_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:max="255" />
+                android:id="@+id/blue_seek_bar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:max="255"
+                />
     </LinearLayout>
 
 </rxjoin.example.view.ColorPickerView>

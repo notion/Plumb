@@ -6,19 +6,18 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import com.jakewharton.rxbinding.widget.RxSeekBar;
-import rxjoin.example.R;
-import rxjoin.example.viewmodel.ColorPickerViewModel;
-import plumb.Plumbing;
-import plumb.annotation.In;
-import plumb.annotation.Out;
-import plumb.annotation.Plumbed;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.subjects.BehaviorSubject;
 import rx.subscriptions.CompositeSubscription;
+import rxjoin.RxJoin;
+import rxjoin.annotation.In;
+import rxjoin.annotation.Joined;
+import rxjoin.annotation.Out;
+import rxjoin.example.R;
+import rxjoin.example.viewmodel.ColorPickerViewModel;
 
-@Plumbed(ColorPickerViewModel.class)
-public class ColorPickerView extends RelativeLayout {
+@Joined(ColorPickerViewModel.class) public class ColorPickerView extends RelativeLayout {
 
     public ImageView colorView;
 
@@ -57,12 +56,12 @@ public class ColorPickerView extends RelativeLayout {
                 colorView.setBackgroundColor(color);
             }
         }));
-        Plumbing.plumb(this, viewModel);
+        RxJoin.join(this, viewModel);
     }
 
     @Override public void onDetachedFromWindow() {
         subscriptions.unsubscribe();
-        Plumbing.demolish(this);
+        RxJoin.demolish(this);
         super.onDetachedFromWindow();
     }
 }
