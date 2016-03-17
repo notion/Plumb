@@ -1,4 +1,4 @@
-package com.plumb.example.view;
+package rxjoin.example.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,8 +6,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import com.jakewharton.rxbinding.widget.RxSeekBar;
-import com.plumb.example.viewmodel.ColorPickerViewModel;
-import com.plumb.plumb.R;
+import rxjoin.example.R;
+import rxjoin.example.viewmodel.ColorPickerViewModel;
 import plumb.Plumbing;
 import plumb.annotation.In;
 import plumb.annotation.Out;

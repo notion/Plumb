@@ -1,9 +1,8 @@
-package com.plumb.example.activity;
+package rxjoin.example.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import com.plumb.plumb.R;
+import rxjoin.example.R;
 
 public class ColorPickerActivity extends AppCompatActivity {
 
