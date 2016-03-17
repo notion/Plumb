@@ -1,1 +1,1 @@
-include ':plumb-example', ':core', ':compiler'
+include ':rxjoin-example', ':core', ':compiler'
