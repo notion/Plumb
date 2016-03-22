@@ -11,6 +11,7 @@ import javax.lang.model.element.ElementKind.METHOD
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeKind.DECLARED
+import javax.lang.model.type.TypeKind.EXECUTABLE
 import javax.lang.model.type.TypeMirror
 import org.mockito.Mockito.`when` as mockWhen
 
@@ -42,7 +43,7 @@ class OutValidatorTest : ValidatorTest() {
         mockWhen(mockedTypes.isAssignable(Mockito.any(), Mockito.any())).thenReturn(true)
         val method = makeMockedOutElement(METHOD,
                 getMockExecutableTypeWithReturnType(mockObservableDeclaredType), "foo")
-        mockWhen(method.asType().kind).thenReturn(DECLARED)
+        mockWhen(method.asType().kind).thenReturn(EXECUTABLE)
         val model = getJoinerModelWithEntryIds(arrayOf("bar"))
         assertThat(OutValidator.validate(method,
                 getMockedModelWithJoinerModels(model)))

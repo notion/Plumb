@@ -82,7 +82,7 @@ class JoinerWriterTest {
             "	@Override",
             "	public void join(JoinedClassA joined, JoinedClassA.JoinedViewModelA joinedTo) {",
             "		if (subscriptions != null && !subscriptions.isUnsubscribed()) {",
-            "			subscriptions.unsubscribe()",
+            "			subscriptions.unsubscribe();",
             "		}",
             "		subscriptions = new CompositeSubscription();",
             "		subscriptions.add(Utils.replicate(joined.integerObservable, joinedTo.integerSubject));",

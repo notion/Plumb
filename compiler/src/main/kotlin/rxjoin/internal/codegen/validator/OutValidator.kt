@@ -11,6 +11,7 @@ import javax.lang.model.element.ElementKind.FIELD
 import javax.lang.model.element.ElementKind.METHOD
 import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeKind.DECLARED
+import javax.lang.model.type.TypeKind.EXECUTABLE
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 
@@ -29,7 +30,7 @@ object OutValidator : Validator {
             element: Element) = "@Out-annotated Field ${element.simpleName} is not a parameterized Observable."
 
     fun methodDoesNotReturnObservableError(
-            element: Element) = "@Out-annotated Field ${element.simpleName} is not an Observable."
+            element: Element) = "@Out-annotated Field ${element.simpleName} is not a parameterized Observable."
 
     fun methodHasArgumentsError(
             element: Element) = "@Out-annotated Method ${element.simpleName} has arguments. Must have zero arguments."
@@ -44,6 +45,11 @@ object OutValidator : Validator {
             = "@Out-annotated Element ${element.simpleName} is not enclosed by @Joined class or class being joined to."
 
     private val observableQualifiedName = Observable::class.java.canonicalName
+
+    private fun declaredObservableType() =
+            types.getDeclaredType(
+                    elements.getTypeElement(observableQualifiedName),
+                    types.getWildcardType(null, null))
 
     override fun validate(element: Element, model: Model): Boolean {
         this.types = model.types
@@ -78,11 +84,7 @@ object OutValidator : Validator {
     private fun validateField(element: Element): Boolean {
         return if (element.asType().kind == DECLARED) {
             val type = element.asType()
-            if (!types.isAssignable(type,
-                    types.getDeclaredType(
-                            elements.getTypeElement(
-                                    observableQualifiedName),
-                            types.getWildcardType(null, null)))) {
+            if (!types.isAssignable(type, declaredObservableType())) {
                 messager.error(
                         fieldNotObservableError(element))
                 false
@@ -103,15 +105,10 @@ object OutValidator : Validator {
 
     private fun validateMethod(element: Element): Boolean {
         val executableType = element.asType() as ExecutableType
-        val typeValid = if (executableType.kind == DECLARED) {
-            val type = element.asType()
-            if (!types.isAssignable(type,
-                    types.getDeclaredType(
-                            elements.getTypeElement(
-                                    observableQualifiedName),
-                            types.getWildcardType(null, null)))) {
-                messager.error(
-                        fieldNotObservableError(element))
+        val typeValid = if (executableType.kind == EXECUTABLE) {
+            val returnType = executableType.returnType
+            if (!types.isAssignable(returnType, declaredObservableType())) {
+                messager.error(fieldNotParameterizedObservable(element))
                 false
             }
             else {
@@ -119,17 +116,7 @@ object OutValidator : Validator {
             }
         }
         else {
-            val returnType = executableType.returnType
-            if (returnType.toString() != observableQualifiedName) {
-                messager.error(
-                        methodDoesNotReturnObservableError(
-                                element))
-            }
-            else {
-                messager.error(
-                        fieldNotParameterizedObservable(
-                                element))
-            }
+            messager.error(fieldNotParameterizedObservable(element))
             false
         }
 
