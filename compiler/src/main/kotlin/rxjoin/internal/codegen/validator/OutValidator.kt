@@ -44,13 +44,6 @@ object OutValidator : Validator {
     fun notEnclosedByJoinedClass(element: Element)
             = "@Out-annotated Element ${element.simpleName} is not enclosed by @Joined class or class being joined to."
 
-    private val observableQualifiedName = Observable::class.java.canonicalName
-
-    private fun declaredObservableType() =
-            types.getDeclaredType(
-                    elements.getTypeElement(observableQualifiedName),
-                    types.getWildcardType(null, null))
-
     override fun validate(element: Element, model: Model): Boolean {
         this.types = model.types
         this.elements = model.elements
@@ -58,15 +51,10 @@ object OutValidator : Validator {
         val joinModels = model.joinerModels
 
         val fieldOrMethodValid = when (element.kind) {
-            FIELD -> {
-                validateField(element)
-            }
-            METHOD -> {
-                validateMethod(element)
-            }
+            FIELD -> validateField(element)
+            METHOD -> validateMethod(element)
             else -> {
-                messager.error(
-                        elementNotFieldOrMethodError(element))
+                messager.error(elementNotFieldOrMethodError(element))
                 false
             }
         }
@@ -79,14 +67,18 @@ object OutValidator : Validator {
 
     // Helpers
 
+    private fun declaredObservableType() =
+            types.getDeclaredType(
+                    elements.getTypeElement(Observable::class.java.canonicalName),
+                    types.getWildcardType(null, null))
+
     // Field must be a DeclaredType Observable (e.g. Observable<Integer> vs Observable, String).
 
     private fun validateField(element: Element): Boolean {
         return if (element.asType().kind == DECLARED) {
             val type = element.asType()
             if (!types.isAssignable(type, declaredObservableType())) {
-                messager.error(
-                        fieldNotObservableError(element))
+                messager.error(fieldNotObservableError(element))
                 false
             }
             else {
@@ -94,8 +86,7 @@ object OutValidator : Validator {
             }
         }
         else {
-            messager.error(
-                    fieldNotParameterizedObservable(element))
+            messager.error(fieldNotParameterizedObservable(element))
             false
         }
     }
@@ -121,8 +112,7 @@ object OutValidator : Validator {
         }
 
         val hasZeroParams = if (executableType.parameterTypes.size != 0) {
-            messager.error(
-                    methodHasArgumentsError(element))
+            messager.error(methodHasArgumentsError(element))
             false
         }
         else {
@@ -136,15 +126,13 @@ object OutValidator : Validator {
     // to previously recorded @Out-annotated elements.
 
     private fun validateJoinModels(element: Element, models: MutableList<JoinerModel>): Boolean {
-        val entry = models
-                .firstOrNull {
+        val entry = models.firstOrNull {
                     it.enclosing == element.enclosingElement
                             || it.enclosed.asType() == element.enclosingElement.asType()
                 }
 
         if (entry == null) {
-            messager.error(
-                    notEnclosedByJoinedClass(element))
+            messager.error(notEnclosedByJoinedClass(element))
             return false
         }
 
@@ -153,8 +141,7 @@ object OutValidator : Validator {
         // Uniqueness amongst @Outs
         val annotationValue = element.getAnnotation(Out::class.java).value
         if (inOutRegistries.firstOrNull { it.id == annotationValue } != null) {
-            messager.error(
-                    duplicateOutValueError(annotationValue))
+            messager.error(duplicateOutValueError(annotationValue))
             return false
         }
         return true
