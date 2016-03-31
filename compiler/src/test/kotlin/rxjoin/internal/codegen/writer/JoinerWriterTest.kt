@@ -38,6 +38,37 @@ class JoinerWriterTest {
             "   }",
             "}")
 
+    private val invalidSourceWithInAsObserver = JavaFileObjects.forSourceLines("rxjoin.example.JoinedClassA",
+            "package rxjoin.example;",
+
+            "import rx.Observable;",
+            "import rx.Observer;",
+            "import rx.subjects.BehaviorSubject;",
+            "import rxjoin.annotation.*;",
+
+            "@Joined(JoinedClassA.JoinedViewModelA.class)",
+            "public class JoinedClassA {",
+
+            "	JoinedViewModelA viewModel = new JoinedViewModelA();",
+
+            "	@Out(\"integer\")",
+            "	public Observable<Integer> integerObservable;",
+
+            "	@In(\"string\")",
+            "	public BehaviorSubject<String> stringSubject = BehaviorSubject.create();",
+
+            "	public class JoinedViewModelA {",
+            "		@In(\"integer\")",
+            "		public Observer<Integer> integerObserver = BehaviorSubject.create();",
+
+            "		@In(\"string\")",
+            "		public BehaviorSubject<String> stringSubject = BehaviorSubject.create();",
+
+            "		@Out(\"string\")",
+            "		public Observable<String> stringObservable;",
+            "   }",
+            "}")
+
     private val joinedClassAJoiner = JavaFileObjects.forSourceLines("rxjoin.JoinedClassA_Joiner",
             "package rxjoin;",
             "",
@@ -51,7 +82,7 @@ class JoinerWriterTest {
             "	@Override",
             "	public void join(JoinedClassA joined, JoinedClassA.JoinedViewModelA joinedTo) {",
             "		if (subscriptions != null && !subscriptions.isUnsubscribed()) {",
-            "			subscriptions.unsubscribe()",
+            "			subscriptions.unsubscribe();",
             "		}",
             "		subscriptions = new CompositeSubscription();",
             "		subscriptions.add(Utils.replicate(joined.integerObservable, joinedTo.integerSubject));",
@@ -74,5 +105,14 @@ class JoinerWriterTest {
                 .compilesWithoutError()
                 .and()
                 .generatesSources(joinedClassAJoiner)
+    }
+
+    @Test
+    fun test_invalidViewmodelThrowsError() {
+        assertAbout(JavaSourceSubjectFactory.javaSource())
+                .that(invalidSourceWithInAsObserver)
+                .processedWith(RxJoinProcessor())
+                .failsToCompile()
+                .withErrorContaining("@In-annotated element integerObserver must extend Subject<*, *>.")
     }
 }

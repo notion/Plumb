@@ -18,6 +18,8 @@ object InValidator : Validator {
     private lateinit var elements: Elements
     private lateinit var messager: Messager
 
+    // Error messages
+
     fun elementNotFieldError(element: Element) =
             "@In-annotated element ${element.simpleName} must be a FIELD. It is a ${element.kind}"
 
@@ -30,8 +32,6 @@ object InValidator : Validator {
     fun noCorrespondingRegistryError(element: Element) =
             "@In-annotated element ${element.simpleName} has no corresponding @Out-annotated element."
 
-    val subjectQualifiedName = Subject::class.java.canonicalName
-
     override fun validate(element: Element, model: Model): Boolean {
         types = model.types
         elements = model.elements
@@ -42,35 +42,32 @@ object InValidator : Validator {
                 validateField(element)
             }
             else -> {
-                messager.error(
-                        elementNotFieldError(element))
+                messager.error(elementNotFieldError(element))
                 false
             }
         }
-        return isValidField && validateMatchingJoiner(element,
-                model.joinerModels)
+        return isValidField && validateMatchingJoiner(element, model.joinerModels)
     }
+
+    private fun declaredSubjectType() =
+            types.getDeclaredType(
+                    elements.getTypeElement(Subject::class.java.canonicalName),
+                    types.getWildcardType(null, null),
+                    types.getWildcardType(null, null))
 
     private fun validateField(element: Element): Boolean {
         return if (element.asType().kind == DECLARED) {
             val type = element.asType()
-            if (types.isAssignable(type,
-                    types.getDeclaredType(
-                            elements.getTypeElement(
-                                    subjectQualifiedName),
-                            types.getWildcardType(null, null),
-                            types.getWildcardType(null, null)))) {
+            if (types.isAssignable(type, declaredSubjectType())) {
                 true
             }
             else {
-                messager.error(
-                        fieldNotSubjectError(element))
+                messager.error(fieldNotSubjectError(element))
                 false
             }
         }
         else {
-            messager.error(
-                    fieldNotParameterizedSubject(element))
+            messager.error(fieldNotParameterizedSubject(element))
             false
         }
     }
@@ -78,14 +75,14 @@ object InValidator : Validator {
     private fun validateMatchingJoiner(element: Element,
             models: MutableList<JoinerModel>): Boolean {
         val annotationValue = element.getAnnotation(In::class.java).value
-        val matchingRegistry = models.firstOrNull { it.registry.firstOrNull { it.id == annotationValue } != null }
+        val matchingRegistry =
+                models.firstOrNull{ it.registry.firstOrNull { it.id == annotationValue } != null }
 
         return if (matchingRegistry != null) {
             true
         }
         else {
-            messager.error(
-                    noCorrespondingRegistryError(element))
+            messager.error(noCorrespondingRegistryError(element))
             false
         }
     }

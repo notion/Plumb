@@ -11,6 +11,7 @@ import javax.lang.model.element.ElementKind.FIELD
 import javax.lang.model.element.ElementKind.METHOD
 import javax.lang.model.type.ExecutableType
 import javax.lang.model.type.TypeKind.DECLARED
+import javax.lang.model.type.TypeKind.EXECUTABLE
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 
@@ -29,7 +30,7 @@ object OutValidator : Validator {
             element: Element) = "@Out-annotated Field ${element.simpleName} is not a parameterized Observable."
 
     fun methodDoesNotReturnObservableError(
-            element: Element) = "@Out-annotated Field ${element.simpleName} is not an Observable."
+            element: Element) = "@Out-annotated Field ${element.simpleName} is not a parameterized Observable."
 
     fun methodHasArgumentsError(
             element: Element) = "@Out-annotated Method ${element.simpleName} has arguments. Must have zero arguments."
@@ -43,8 +44,6 @@ object OutValidator : Validator {
     fun notEnclosedByJoinedClass(element: Element)
             = "@Out-annotated Element ${element.simpleName} is not enclosed by @Joined class or class being joined to."
 
-    private val observableQualifiedName = Observable::class.java.canonicalName
-
     override fun validate(element: Element, model: Model): Boolean {
         this.types = model.types
         this.elements = model.elements
@@ -52,15 +51,10 @@ object OutValidator : Validator {
         val joinModels = model.joinerModels
 
         val fieldOrMethodValid = when (element.kind) {
-            FIELD -> {
-                validateField(element)
-            }
-            METHOD -> {
-                validateMethod(element)
-            }
+            FIELD -> validateField(element)
+            METHOD -> validateMethod(element)
             else -> {
-                messager.error(
-                        elementNotFieldOrMethodError(element))
+                messager.error(elementNotFieldOrMethodError(element))
                 false
             }
         }
@@ -73,18 +67,18 @@ object OutValidator : Validator {
 
     // Helpers
 
+    private fun declaredObservableType() =
+            types.getDeclaredType(
+                    elements.getTypeElement(Observable::class.java.canonicalName),
+                    types.getWildcardType(null, null))
+
     // Field must be a DeclaredType Observable (e.g. Observable<Integer> vs Observable, String).
 
     private fun validateField(element: Element): Boolean {
         return if (element.asType().kind == DECLARED) {
             val type = element.asType()
-            if (!types.isAssignable(type,
-                    types.getDeclaredType(
-                            elements.getTypeElement(
-                                    observableQualifiedName),
-                            types.getWildcardType(null, null)))) {
-                messager.error(
-                        fieldNotObservableError(element))
+            if (!types.isAssignable(type, declaredObservableType())) {
+                messager.error(fieldNotObservableError(element))
                 false
             }
             else {
@@ -92,8 +86,7 @@ object OutValidator : Validator {
             }
         }
         else {
-            messager.error(
-                    fieldNotParameterizedObservable(element))
+            messager.error(fieldNotParameterizedObservable(element))
             false
         }
     }
@@ -103,15 +96,10 @@ object OutValidator : Validator {
 
     private fun validateMethod(element: Element): Boolean {
         val executableType = element.asType() as ExecutableType
-        val typeValid = if (executableType.kind == DECLARED) {
-            val type = element.asType()
-            if (!types.isAssignable(type,
-                    types.getDeclaredType(
-                            elements.getTypeElement(
-                                    observableQualifiedName),
-                            types.getWildcardType(null, null)))) {
-                messager.error(
-                        fieldNotObservableError(element))
+        val typeValid = if (executableType.kind == EXECUTABLE) {
+            val returnType = executableType.returnType
+            if (!types.isAssignable(returnType, declaredObservableType())) {
+                messager.error(fieldNotParameterizedObservable(element))
                 false
             }
             else {
@@ -119,23 +107,12 @@ object OutValidator : Validator {
             }
         }
         else {
-            val returnType = executableType.returnType
-            if (returnType.toString() != observableQualifiedName) {
-                messager.error(
-                        methodDoesNotReturnObservableError(
-                                element))
-            }
-            else {
-                messager.error(
-                        fieldNotParameterizedObservable(
-                                element))
-            }
+            messager.error(fieldNotParameterizedObservable(element))
             false
         }
 
         val hasZeroParams = if (executableType.parameterTypes.size != 0) {
-            messager.error(
-                    methodHasArgumentsError(element))
+            messager.error(methodHasArgumentsError(element))
             false
         }
         else {
@@ -149,15 +126,13 @@ object OutValidator : Validator {
     // to previously recorded @Out-annotated elements.
 
     private fun validateJoinModels(element: Element, models: MutableList<JoinerModel>): Boolean {
-        val entry = models
-                .firstOrNull {
+        val entry = models.firstOrNull {
                     it.enclosing == element.enclosingElement
                             || it.enclosed.asType() == element.enclosingElement.asType()
                 }
 
         if (entry == null) {
-            messager.error(
-                    notEnclosedByJoinedClass(element))
+            messager.error(notEnclosedByJoinedClass(element))
             return false
         }
 
@@ -166,8 +141,7 @@ object OutValidator : Validator {
         // Uniqueness amongst @Outs
         val annotationValue = element.getAnnotation(Out::class.java).value
         if (inOutRegistries.firstOrNull { it.id == annotationValue } != null) {
-            messager.error(
-                    duplicateOutValueError(annotationValue))
+            messager.error(duplicateOutValueError(annotationValue))
             return false
         }
         return true
